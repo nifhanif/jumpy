@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/parallax.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jumpy/helper/enums.dart';
 import 'package:jumpy/helper/game_controller.dart';
@@ -23,11 +24,87 @@ class Player extends PositionComponent with CollisionCallbacks, HasGameRef {
         pupils = Path()
           ..addOval(const Rect.fromLTWH(14, 11, 2, 2))
           ..addOval(const Rect.fromLTWH(8, 11, 2, 2)),
+        mobil = Path()
+        // Menggambar bodi mobil
+         ..moveTo(0, 40 * 0.8)
+          ..lineTo(60 * 0.2, 40 * 0.8)
+          ..lineTo(60 * 0.2, 40 * 0.6)
+          ..lineTo(60 * 0.35, 40 * 0.6)
+          ..lineTo(60 * 0.35, 40 * 0.45)
+          ..lineTo(60 * 0.2, 40 * 0.45)
+          ..lineTo(60 * 0.2, 40 * 0.25)
+          ..lineTo(60 * 0.35, 40 * 0.25)
+          ..lineTo(60 * 0.35, 40 * 0.1)
+          ..lineTo(60 * 0.6, 40 * 0.1)
+          ..lineTo(60 * 0.6, 40 * 0.25)
+          ..lineTo(60 * 0.8, 40 * 0.25)
+          ..lineTo(60 * 0.8, 40 * 0.1)
+          ..lineTo(60, 40 * 0.1)
+          ..lineTo(60, 40 * 0.25)
+          ..lineTo(60 * 0.8, 40 * 0.25)
+          ..lineTo(60 * 0.8, 40 * 0.45)
+          ..lineTo(60, 40 * 0.45)
+          ..lineTo(60, 40 * 0.8)
+          ..lineTo(60 * 0.7, 40 * 0.8)
+          ..lineTo(60 * 0.7, 40 * 0.7)
+          ..lineTo(60 * 0.55, 40 * 0.7)
+          ..lineTo(60 * 0.55, 40 * 0.5)
+          ..lineTo(60 * 0.7, 40 * 0.5)
+          ..lineTo(60 * 0.7, 40 * 0.4)
+          ..lineTo(60 * 0.55, 40 * 0.4)
+          ..lineTo(60 * 0.55, 40 * 0.25)
+          ..lineTo(60 * 0.7, 40 * 0.25)
+          ..lineTo(60 * 0.7, 40 * 0.15)
+          ..lineTo(60 * 0.6, 40 * 0.15)
+          ..lineTo(60 * 0.6, 40 * 0.25)
+          ..lineTo(60 * 0.45, 40 * 0.25)
+          ..lineTo(60 * 0.45, 40 * 0.4)
+          ..lineTo(60 * 0.6, 40 * 0.4)
+          ..lineTo(60 * 0.6, 40 * 0.5)
+          ..lineTo(60 * 0.45, 40 * 0.5)
+          ..lineTo(60 * 0.45, 40 * 0.7)
+          ..lineTo(60 * 0.6, 40 * 0.7)
+          ..lineTo(60 * 0.6, 40 * 0.8)
+
+          // Menggambar jendela depan
+          ..moveTo(60 * 0.25, 40 * 0.3)
+          ..lineTo(60 * 0.35, 40 * 0.3)
+          ..lineTo(60 * 0.35, 40 * 0.4)
+          ..lineTo(60 * 0.25, 40 * 0.4)
+          ..close()
+// Menggambar jendela belakang
+          ..moveTo(60 * 0.65, 40 * 0.3)
+          ..lineTo(60 * 0.75, 40 * 0.3)
+          ..lineTo(60 * 0.75, 40 * 0.4)
+          ..lineTo(60 * 0.65, 40 * 0.4)
+          ..close()
+
+// Menggambar lampu depan
+          ..moveTo(60 * 0.35, 40 * 0.55)
+          ..lineTo(60 * 0.38, 40 * 0.55)
+          ..lineTo(60 * 0.38, 40 * 0.5)
+          ..lineTo(60 * 0.35, 40 * 0.5)
+          ..close()
+
+// Menggambar lampu belakang
+          ..moveTo(60 * 0.62, 40 * 0.55)
+          ..lineTo(60 * 0.65, 40 * 0.55)
+          ..lineTo(60 * 0.65, 40 * 0.5)
+          ..lineTo(60 * 0.62, 40 * 0.5)
+          ..close(),
+        mobilRoda = Path()
+          // Menggambar roda
+          ..addOval(Rect.fromCircle(
+              center: Offset(30 * 0.2, 20 * 0.8), radius: 20 * 0.2))
+          ..addOval(Rect.fromCircle(
+              center: Offset(30 * 0.8, 20 * 0.8), radius: 20 * 0.2)),
         velocity = Vector2.zero(),
         super(size: Vector2(20, 20), anchor: Anchor.bottomCenter);
 
   final Parallax parallax;
   final Path body;
+  final Path mobil;
+  final Path mobilRoda;
   final Path eyes;
   final Path pupils;
   final Paint borderPaint = Paint()
@@ -37,6 +114,10 @@ class Player extends PositionComponent with CollisionCallbacks, HasGameRef {
   final Paint innerPaint = Paint()..color = const Color(0xff9c0051);
   final Paint eyesPaint = Paint()..color = const Color(0xFFFFFFFF);
   final Paint pupilsPaint = Paint()..color = const Color(0xFF000000);
+  final Paint mobilPaint = Paint()
+    ..color = Colors.red
+    ..style = PaintingStyle.fill
+    ..strokeWidth = 1.0;
   final Paint shadowPaint = Paint()
     ..shader = ui.Gradient.radial(
       Offset.zero,
@@ -50,6 +131,10 @@ class Player extends PositionComponent with CollisionCallbacks, HasGameRef {
   final double gravity = 900.0;
   bool facingRight = true;
   // int nJumpsLeft = 2;
+
+  //todo mobil
+
+  //todo end mobil
 
   @override
   Future<void>? onLoad() {
@@ -72,7 +157,7 @@ class Player extends PositionComponent with CollisionCallbacks, HasGameRef {
         // ..renderShape = true,
         );
     // add(RectangleHitbox());
-    return super.onLoad();
+    // return super.onLoad();
   }
 
   @override
@@ -140,10 +225,12 @@ class Player extends PositionComponent with CollisionCallbacks, HasGameRef {
       canvas.drawCircle(Offset.zero, 10, shadowPaint);
       canvas.restore();
     }
-    canvas.drawPath(body, innerPaint);
-    canvas.drawPath(body, borderPaint);
-    canvas.drawPath(eyes, eyesPaint);
-    canvas.drawPath(pupils, pupilsPaint);
+    // canvas.drawPath(body, innerPaint);
+    // canvas.drawPath(body, borderPaint);
+    // canvas.drawPath(eyes, eyesPaint);
+    // canvas.drawPath(pupils, pupilsPaint);
+    canvas.drawPath(mobil, mobilPaint);
+    canvas.drawPath(mobilRoda, borderPaint);
   }
 
   @override

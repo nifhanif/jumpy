@@ -281,7 +281,7 @@ class CutterManager extends Component {
   Future<void>? onLoad() {
     lastCutterSpriteCOmponent = CutterSpriteComponent(parallax, world);
     world.add(lastCutterSpriteCOmponent);
-    return super.onLoad();
+    // return super.onLoad();
   }
 
   @override
@@ -324,8 +324,11 @@ class CutterSpriteComponent extends SpriteAnimationComponent
     priority = 10;
     x = 35.h;
     y = 18.w;
-    final sprites =
-        [1, 2, 3, 4, 5, 6].map((i) => Sprite.load('rotating_saw_0$i.png'));
+    // final sprites =
+    //     [1, 2, 3, 4, 5, 6].map((i) => Sprite.load('rotating_saw_0$i.png'));
+        final sprites =
+        [1, 2, 3, 4, 5, 6].map((i) => Sprite.load('truck0$i.png'));
+        
     final spriteAnimation = SpriteAnimation.spriteList(
       await Future.wait(sprites),
       stepTime: 0.08,
@@ -410,7 +413,7 @@ class CoinManager extends Component {
     );
     world.addAll(lastCoinSpriteComponents.values.toList());
 
-    return super.onLoad();
+    // return super.onLoad();
   }
 
   @override
